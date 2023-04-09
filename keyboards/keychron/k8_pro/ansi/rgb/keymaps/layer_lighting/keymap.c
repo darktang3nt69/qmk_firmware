@@ -24,6 +24,9 @@ enum layers{
   WIN_FN
 };
 
+
+
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [MAC_BASE] = LAYOUT_ansi_87(
      KC_ESC,   KC_BRID,  KC_BRIU,  KC_MCTL,  KC_LNPD,  RGB_VAD,  RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,           KC_SNAP,   KC_SIRI,  RGB_MOD,
@@ -50,31 +53,94 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      KC_LCTL,  KC_LGUI,  KC_LALT,                                KC_SPC,                                 KC_RALT,  KC_RGUI, MO(WIN_FN),KC_RCTL,  KC_LEFT,  KC_DOWN,  KC_RGHT),
 
 [WIN_FN] = LAYOUT_ansi_87(
-     KC_TRNS,  KC_F1,    KC_F2,  KC_TASK,  KC_F4,  RGB_VAD,  RGB_VAI,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_F10,   KC_F11,   KC_F12 ,            KC_TRNS,  KC_TRNS,  RGB_TOG,
+     KC_TRNS,  KC_F1,    KC_F2,  KC_TASK,  KC_F4,  RGB_VAD,  RGB_VAI,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_F10,   KC_F11,   KC_F12 ,            KC_TRNS,  KC_TRNS,  RGB_TOG,
      KC_TRNS,  BT_HST1,  BT_HST2,  BT_HST3,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_WH_U,  KC_TRNS,
-     RGB_TOG,  RGB_MOD,  KC_TRNS,  RGB_HUI,  RGB_SAI,  RGB_SPI,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_BTN1,  KC_WH_D,  KC_BTN2,
-     KC_TRNS,  RGB_RMOD, RGB_VAD,  RGB_HUD,  RGB_SAD,  RGB_SPD,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,            KC_TRNS,
-     KC_TRNS,            KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  BAT_LVL,  NK_TOGG,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TERM,            KC_TRNS,            KC_MS_UP,
+     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  RGB_SPI,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_BTN1,  KC_WH_D,  KC_BTN2,
+     KC_TRNS,  KC_TRNS, KC_TRNS,  KC_TRNS,  KC_TRNS,  RGB_SPD,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,            KC_TRNS,
+     KC_TRNS,            KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  BAT_LVL,  NK_TOGG,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,            KC_TRNS,            KC_MS_UP,
      KC_TRNS,  KC_TRNS,  KC_TRNS,                                KC_TRNS,                                KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_MS_LEFT,  KC_MS_DOWN,  KC_MS_RIGHT)
 
 };
 
 // Sets all the configured keycaps on layer 2 to RGB_CYAN.
+// bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+//      // Get the current highest layer number.
+//     if (get_highest_layer(layer_state) > 0) {
+//         uint8_t layer = get_highest_layer(layer_state);
+//      // loop through the keymap matrix.
+//         for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
+//             for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
+//                // Get the led index of the keycode.
+//                 uint8_t index = g_led_config.matrix_co[row][col];
+//                //  Check if the led is within the led index range and keycode id greater than KC_TRNS.
+//                 if (index >= led_min && index < led_max && index != NO_LED &&
+//                 keymap_key_to_keycode(layer, (keypos_t){col,row}) > KC_TRNS) {
+//                     rgb_matrix_set_color(index, RGB_CYAN);
+//                 }
+//             }
+//         }
+//     }
+//     return false;
+// }
+
+
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+     // Get the current highest layer number.
     if (get_highest_layer(layer_state) > 0) {
         uint8_t layer = get_highest_layer(layer_state);
-
+     // loop through the keymap matrix.
         for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
             for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
+               // Get the led index of the keycode.
                 uint8_t index = g_led_config.matrix_co[row][col];
-
+               // store the current keycode.
+                uint16_t current_key = keymap_key_to_keycode(layer, (keypos_t){col,row});
+               //  Check if the led is within the led index range and keycode id greater than KC_TRNS.
                 if (index >= led_min && index < led_max && index != NO_LED &&
-                keymap_key_to_keycode(layer, (keypos_t){col,row}) > KC_TRNS) {
-                    rgb_matrix_set_color(index, RGB_CYAN);
+                current_key > KC_TRNS) {
+
+                    switch(current_key){
+                         // light up all mouse keys in RGB_GREEN.
+                         case KC_MS_LEFT:
+                         case KC_MS_DOWN:
+                         case KC_MS_RIGHT: 
+                         case KC_MS_UP:
+                         rgb_matrix_set_color(index, RGB_GREEN);
+                              break;
+                         // light up mouse scroll buttons in magenta.
+                         case KC_WH_D: 
+                         case KC_WH_U: 
+                              rgb_matrix_set_color(index, RGB_GOLD);
+                              break;
+                         // light up right and left buttons in 
+                         case KC_BTN1: 
+                         case KC_BTN2:
+                              rgb_matrix_set_color(index, 255, 0, 102 );
+                              break;
+                              
+                         // Light up bluetooth in bluetooth color.
+                         case BT_HST1:
+                         case BT_HST2:
+                         case BT_HST3:
+                         case BAT_LVL:
+                              rgb_matrix_set_color(index, 0, 0, 255);
+                              break;
+                         // Light up rgb keys in Red.
+                         case RGB_SPI:
+                         case RGB_SPD:
+                         case RGB_VAD:
+                         case RGB_VAI:
+                         case RGB_TOG:
+                              rgb_matrix_set_color(index, RGB_RED);
+                              break;
+                         default:
+                         rgb_matrix_set_color(index, HSV_ORANGE);
+                    }
+
+                    
                 }
             }
         }
     }
     return false;
 }
-
