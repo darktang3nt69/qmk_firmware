@@ -19,8 +19,7 @@
 // Turbo clicking.
 #include "features/mouse_turbo_click.h"
 
-// Drag key?
-// #define DRAG_KEY KC_BTN2
+// #define TAPPING_TERM 10
 
 // clang-format off
 enum layers{
@@ -31,20 +30,12 @@ enum layers{
 };
 
 
-typedef struct PACKED {
-    uint8_t len;
-    uint8_t keycode[6];
-} key_comb;
-
-key_comb key_combinations[1] = {
-    {6, {KC_LALT, KC_D, KC_C, KC_M, KC_D, KC_ENT}}, // KC_TERM_PWD
-};
-
-
 enum custom_keys{
      TURBO = SAFE_RANGE,
      KC_TERM_PWD,
-     MAIL
+     MAIL,
+     PASS,
+     PASS_ALT
 };
 
 
@@ -78,7 +69,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [WIN_FN] = LAYOUT_ansi_87(
      KC_TRNS,  KC_F1,    KC_F2,  TURBO,  KC_F4,  RGB_VAD,  RGB_VAI,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_F10,   KC_F11,   KC_F12 ,            KC_TRNS,  KC_TRNS,  RGB_TOG,
      KC_TERM_PWD,  BT_HST1,  BT_HST2,  BT_HST3,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_SLEP,  KC_WH_U,  KC_WAKE,
-     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  RGB_SPI,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_BTN1,  KC_WH_D,  KC_BTN2,
+     KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  RGB_SPI,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  PASS,  PASS_ALT,  KC_TRNS,  KC_TRNS,  KC_BTN1,  KC_WH_D,  KC_BTN2,
      KC_TRNS,  KC_TRNS, KC_TRNS,  KC_TRNS,  KC_TRNS,  RGB_SPD,  KC_TRNS,  KC_TRNS,  KC_TRNS,  MAIL,  KC_TRNS,  KC_TRNS,            KC_TRNS,
      KC_TRNS,            KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  BAT_LVL,  NK_TOGG,  MAIL,  KC_TRNS,  KC_TRNS,  KC_TRNS,            KC_TRNS,            KC_MS_UP,
      KC_TRNS,  KC_TRNS,  KC_TRNS,                                TURBO,                                KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_TRNS,  KC_MS_LEFT,  KC_MS_DOWN,  KC_MS_RIGHT)
@@ -158,6 +149,12 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
                          case RGB_TOG:
                               rgb_matrix_set_color(index, RGB_RED);
                               break;
+                         // Password and Mail
+                         case PASS:
+                         case PASS_ALT:
+                         case MAIL:
+                         rgb_matrix_set_color(index, 235,126,19);
+                              break;
                          default:
                          rgb_matrix_set_color(index, HSV_ORANGE);
                     }
@@ -173,6 +170,8 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
 // Turbo clicking and Custom keys.
 bool process_record_user(uint16_t keycode, keyrecord_t* record) {
+
+
      if (!process_mouse_turbo_click(keycode, record, TURBO)) { return false; }
      
      switch(keycode){
@@ -200,13 +199,29 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
           break;
      
      case MAIL:
-          SEND_STRING("yourmail\t");
-          SEND_STRING("password\n");
-          return false;
+          if (record->event.pressed) {
+               SEND_STRING("Mail\t");
+               wait_ms(50);
+               SEND_STRING("Pass\n");
+               return false;
+               
+          }
+          break;
+
+          case PASS:
+          if (record->event.pressed) {
+               SEND_STRING("pass1");
+               return false;
+          }
+          break;
+
+          case PASS_ALT:
+          if (record->event.pressed) {
+               SEND_STRING("pass2");
+               return false;
+          }
           break;
      }
-
-
      return true;
 
 }
